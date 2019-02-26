@@ -21,7 +21,7 @@ class user():
     """main authentication method class"""
     def __init__(self):
         self.config = config().json
-        self.id = None
+        self.user_id = None
         self.name = None
         self.md5_password = None 
         self.email = None
@@ -60,7 +60,7 @@ class user():
     def update_user(self):
         cur = self.reactor_db.connection.cursor()
         q = "UPDATE users SET name = %s, md5_password = %s, email = %s WHERE id = %s"
-        if self.id is not None and self.name is not None:
+        if self.user_id is not None and self.name is not None:
             cur.execute(q, (self.name, self.md5_password, self.email, self.user_id))
             self.reactor_db.connection.commit()
             self.user_id = cur.fetchone()[0]
@@ -84,6 +84,66 @@ class user():
         cur = self.reactor_db.connection.cursor()
         q = "SELECT id, name, md5_password, email FROM users WHERE name = %s"
         cur.execute(q, (name,))		
+        r = cur.fetchone()
+        if r is not None:
+            if r[1] == name:
+                self.user_id = r[0]
+                self.name = r[1]
+                self.md5_password = r[2] 
+                self.email = r[3]
+                return True
+        return False
+
+class task():
+    """main authentication method class"""
+    def __init__(self):
+        self.config = config().json
+        self.task_id = None
+        self.name = None
+        self.status = None
+        self.reactor_db = database.connection(self.config['database']['name'], self.config['database']['host'], self.config['database']['user'], self.config['database']['password'], self.config['database']['port'])
+        self.reactor_db.connect()
+
+    def create_task(self):
+        cur = self.reactor_db.connection.cursor()
+        q = "WITH cte AS(INSERT INTO reactor (name, status) VALUES (%s, %s) RETURNING id) SELECT * FROM cte"
+        if self.name is not None and self.status is not None:
+            cur.execute(q, (self.name, self.status))
+            self.reactor_db.connection.commit()
+            self.task_id = cur.fetchone()[0]
+            return True
+        else:
+            return False
+
+    def list_task(self):
+        ret = []
+        cur = self.reactor_db.connection.cursor()
+        q = "SELECT id, name, email FROM users"
+        cur.execute(q, (self.name, self.md5_password, self.email))
+        res = cur.fetchall()
+        for r in res:
+            t = {}
+            t['id'] = r[0]
+            t['name'] = r[1]
+            t['email'] = r[2]
+            ret.append(t)
+        return ret
+
+    def update_task(self):
+        cur = self.reactor_db.connection.cursor()
+        q = "UPDATE users SET name = %s, md5_password = %s, email = %s WHERE id = %s"
+        if self.id is not None and self.name is not None:
+            cur.execute(q, (self.name, self.md5_password, self.email, self.user_id))
+            self.reactor_db.connection.commit()
+            self.user_id = cur.fetchone()[0]
+            return True
+        else:
+            return False
+
+    def load_task_by_name(self, name):
+        cur = self.reactor_db.connection.cursor()
+        q = "SELECT id, name, md5_password, email FROM users WHERE name = %s"
+        cur.execute(q, (name,))     
         r = cur.fetchone()
         if r is not None:
             if r[1] == name:

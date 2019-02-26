@@ -4,6 +4,7 @@ import os
 import json
 import app.views
 
+
 flask_object = Flask(__name__)
 
 class Wapi(Flask):
@@ -57,6 +58,12 @@ class Wapi(Flask):
         self.add_url_rule('/user/', defaults={'user_id': None}, view_func=user_view, methods=['GET',])
         self.add_url_rule('/user/', view_func=user_view, methods=['POST',])
         self.add_url_rule('/user/<int:user_id>', view_func=user_view, methods=['GET', 'PUT', 'DELETE'])
-
         return "User Module loaded"
-		
+
+    def enable_task(self):
+        url = "/task"
+        print("adding route %s" % url)
+        view = app.views.admin.UserView.as_view('task_api')
+        self.add_url_rule('/task/', defaults={'task_id': None}, view_func=view, methods=['GET',])
+        self.add_url_rule('/task/', view_func=view, methods=['POST',])
+        self.add_url_rule('/task/<int:user_id>', view_func=view, methods=['GET', 'PUT', 'DELETE'])

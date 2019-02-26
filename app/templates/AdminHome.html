@@ -31,7 +31,7 @@
 					    <input ng-model="CuName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter username">
 					  </div>
 					  <div class="form-group">
-					    <label for="exampleInputEmail1">Email address {{ CuEmail }}</label>
+					    <label for="exampleInputEmail1">Email address {{ CuEmail }}</label@>
 					    <input ng-model="CuEmail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
 					    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
 					  </div>
@@ -78,6 +78,31 @@
 									<td>{{ user['id'] }}</td>
 									<td>{{ user['name'] }}</td>
 									<td>{{ user['email'] }}</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			<div class="row">
+				<div class="col-lg-6">
+					<h2>Bordered Table</h2>
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover table-striped">
+							<thead>
+								<tr>
+									<th>Task Id</th>
+									<th>Task Name</th>
+									<th>Task Status</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for task in task_list %}
+								<tr>
+									<td>{{ task['id'] }}</td>
+									<td>{{ task['name'] }}</td>
+									<td>{{ task['status'] }}</td>
 								</tr>
 							{% endfor %}
 							</tbody>

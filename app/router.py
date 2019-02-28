@@ -24,6 +24,7 @@ class Wapi(Flask):
             msg.append(self.enable_login())
             msg.append(self.enable_static())
             msg.append(self.enable_user())
+            msg.append(self.enable_task())
             for m in msg:
                 print(m)
         self.reload()
@@ -63,7 +64,7 @@ class Wapi(Flask):
     def enable_task(self):
         url = "/task"
         print("adding route %s" % url)
-        view = app.views.admin.UserView.as_view('task_api')
+        view = app.views.admin.TaskView.as_view('task_api')
         self.add_url_rule('/task/', defaults={'task_id': None}, view_func=view, methods=['GET',])
         self.add_url_rule('/task/', view_func=view, methods=['POST',])
-        self.add_url_rule('/task/<int:user_id>', view_func=view, methods=['GET', 'PUT', 'DELETE'])
+        self.add_url_rule('/task/<int:task_id>', view_func=view, methods=['GET', 'PUT', 'DELETE'])

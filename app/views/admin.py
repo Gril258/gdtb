@@ -8,9 +8,7 @@ class AdminView(views.MethodView):
         config = app.base.config().json
         if 'Auth' in request.cookies:
             if request.cookies['Auth'] == 'yes':
-                u = app.base.user()
-                user_list = u.list_user()
-                return render_template('AdminHome.html', user_list=user_list, SERVER_URL=config['SERVER_NAME'])
+                return render_template('AdminHome.html', SERVER_URL=config['SERVER_NAME'])
         else:
             return redirect(url_for('login'))
 
@@ -43,7 +41,45 @@ class UserView(views.MethodView):
     def get(self, user_id):
             if user_id is None:
                 # return a list of users
-                return "haha"
+                u = app.base.user()
+                return jsonify(**u.list_user())
+            else:
+                # expose a single user
+                pass
+
+    def post(self):
+        # create a new user
+        e = {}
+        user = request.get_json()
+        if 'name' in user and 'password' in user:
+            u = app.base.user()
+            u.name = user['name']
+            u.md5_password = u.encrypt_password(user['password'])
+            u.email = user['email']
+            if u.create_user():
+                return jsonify(**user)
+            else:
+                e['status'] = "Error: cannot create user"
+                return jsonify(**e)
+        else:
+            e['status'] = "Error: wrong username or password"
+            return jsonify(**e)
+
+    def delete(self, user_id):
+        # delete a single user
+        pass
+
+    def put(self, user_id):
+        # update a single user
+        pass
+
+class TaskView(views.MethodView):
+    """docstring for UserView"""
+    def get(self, task_id):
+            if task_id is None:
+                # return a list of users
+                t = app.base.task()
+                return jsonify(**t.list_task())
             else:
                 # expose a single user
                 pass

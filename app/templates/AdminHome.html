@@ -10,7 +10,7 @@
     <script src="/static/js/src/admin.js"></script>
     <!--<link rel="stylesheet" type="text/css" href="/static/css/style.css">-->
 </head>
-<body ng-app="GDAdmin" ng-controller="GDAdminController">
+<body ng-app="GDAdmin" ng-controller="GDAdminController" ng-init="Init()">
 
 	<div id="page-wrapper">
 
@@ -18,7 +18,7 @@
 
 			<!-- Page Heading -->
 			<div class="row">
-				<div class="col-lg-12">
+				<div class="col-lg-6">
 					<h1 class="page-header">
 						Tables
 					</h1>
@@ -57,12 +57,51 @@
 						</li>
 					</ol>
 				</div>
+				<div class="col-lg-6">
+					<h1 class="page-header">
+						Tables
+					</h1>
+					<span><button ng-style="style0" ng-click="showme=true">Create User</button></span>
+					<span><button ng-style="style0" ng-click="showme=false">Hide</button></span>
+					  {% raw %}
+					<div ng-show="ShowCt">
+					  <div class="form-group">
+					    <label for="Example">Task Name</label>
+					    <input ng-model="CuName" class="form-control" id="exampleInputEmail1" aria-describedby="taskHelp" placeholder="Enter Task Name">
+					  </div>
+					  <div class="form-group">
+					    <label for="Example">Task Module</label@>
+					    <input ng-model="CuEmail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter ">
+					    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					  </div>
+					  <div class="form-group">
+					    <label for="exampleInputPassword1">Task Options</label>
+					    <input ng-model="CuPassword" type="password" class="form-control" id="exampleInputPassword1" placeholder="{"MAC":"FF:FF:FF:FF:FF:FF"}">
+					  </div>
+
+					  <div ng-show="CtShowError">
+					  	<p class="error"><strong>Error:</strong>{{ CuError }}</p>
+					  </div>
+					  {% endraw %}
+					  <button type="submit" class="btn btn-primary" ng-click="CreateUser()">Submit</button>
+					</div>
+					<ol class="breadcrumb">
+						<!--
+						<li>
+							<i class="fa fa-dashboard"></i>  <a href="/admin/">Dashboard </a>
+						</li>
+						-->
+						<li class="active">
+							<i class="fa fa-table"></i> Tables
+						</li>
+					</ol>
+				</div>
 			</div>
 			<!-- /.row -->
 
 			<div class="row">
 				<div class="col-lg-6">
-					<h2>Bordered Table</h2>
+					<h2>User Table</h2>
 					<div class="table-responsive">
 						<table class="table table-bordered table-hover table-striped">
 							<thead>
@@ -73,21 +112,19 @@
 								</tr>
 							</thead>
 							<tbody>
-							{% for user in user_list %}
-								<tr>
+							{% raw %}
+								<tr ng-repeat="user in UserList['list']">
 									<td>{{ user['id'] }}</td>
 									<td>{{ user['name'] }}</td>
 									<td>{{ user['email'] }}</td>
 								</tr>
-							{% endfor %}
+							{% endraw %}
 							</tbody>
 						</table>
 					</div>
 				</div>
-
-			<div class="row">
 				<div class="col-lg-6">
-					<h2>Bordered Table</h2>
+					<h2>Task Table</h2>
 					<div class="table-responsive">
 						<table class="table table-bordered table-hover table-striped">
 							<thead>
@@ -95,23 +132,28 @@
 									<th>Task Id</th>
 									<th>Task Name</th>
 									<th>Task Status</th>
+									<th>Task Module</th>
+									<th>Task Data</th>
+									<th>Task Options</th>
 								</tr>
 							</thead>
 							<tbody>
-							{% for task in task_list %}
-								<tr>
+							{% raw %}
+								<tr ng-repeat="task in TaskList['list']">
 									<td>{{ task['id'] }}</td>
 									<td>{{ task['name'] }}</td>
 									<td>{{ task['status'] }}</td>
+									<td>{{ task['module'] }}</td>
+									<td>{{ task['data'] }}</td>
+									<td>{{ task['options'] }}</td>
 								</tr>
-							{% endfor %}
+							{% endraw %}
 							</tbody>
 						</table>
 					</div>
 				</div>
         <script>
         var server_url = "{{ SERVER_URL }}";
-        
         </script>
         
 </body>

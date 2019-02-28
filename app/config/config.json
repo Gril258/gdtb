@@ -12,6 +12,6 @@
     "reconect_interval": "60",
     "status_interval": "10",
     "status_verbosity": "high",
-    "cores": "4"
+    "cores": "16"
   }
 }

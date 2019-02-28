@@ -14,6 +14,33 @@ app.controller("GDAdminController", function($scope, $http, $window) {
   $scope.CuPassword = "ss";
   $scope.CuShowError = false;
   $scope.CuError = "test";
+  $scope.Init = function() {
+    $scope.GetTaskList()
+    $scope.GetUserList()
+  }
+
+  $scope.GetTaskList = function () {
+    var dest = "http://" + server_url + "/task/";
+    $http.get(dest, config).then(
+        function successCallback(response) {
+            $scope.TaskList = response.data;
+        }, function errorCallback(response) {
+            $scope.HttpError = response.code;
+        }
+    );
+  }
+
+  $scope.GetUserList = function () {
+    var dest = "http://" + server_url + "/user/";
+    $http.get(dest, config).then(
+        function successCallback(response) {
+            $scope.UserList = response.data;
+        }, function errorCallback(response) {
+            $scope.HttpError = response.code;
+        }
+    );
+  }
+
   $scope.CreateUser = function () {
     var dest = "http://" + server_url + "/user/";
     var body = {
@@ -25,7 +52,7 @@ app.controller("GDAdminController", function($scope, $http, $window) {
         function successCallback(response) {
             $scope.CuShowError = true;
             $scope.CuError = response.data;
-            $window.location.reload();
+            $scope.GetUserList()
         }, function errorCallback(response) {
             $scope.CuError = "error CreateUser";
         }

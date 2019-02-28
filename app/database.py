@@ -17,7 +17,6 @@ class connection:
         if self.connection is psycopg2.connect:
             raise RuntimeError("already connected")
         try:
-            #"dbname='geosense_ga' user='gisa_dev' password='t.swlres5r' host='10.110.1.13'"
             conn_str = "dbname='%s' user='%s' host='%s' password='%s' port='%s'" % (self.dbname, self.user, self.host, self.password, self.port)
             self.connection = psycopg2.connect(conn_str)
             self.connection.set_client_encoding('UTF-8')

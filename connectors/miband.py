@@ -26,14 +26,20 @@ notificationsUUID = AuthenticationConstants.AUTHENTICATION_NOTIFICATIONS
 
 @app.core.hander.DoTask()
 def start():
-	print("doing task")
-	return "did it"
+    print("doing task")
+    return "did it"
 
-class entrypoint():
+class entrypoint(app.core.Handler):
     """docstring for entrypoint"""
-    def __init__(self, arg):
-        self.arg = arg
-		
+    async def DoTask(self):
+        print("TaskId - MIBAND!!!! = %s" % self.TaskId)
+        print("TaskName = %s" % self.TaskName)
+        print("TaskData = %s" % self.TaskData)
+        self.TaskStatus = "running"
+        call = "%s(self.TaskData)"
+        result = eval(call)
+        await self.UpdateTask()
+        return "done"
 
 class Device(Peripheral):
     #key = b'\xf5\xd2\x29\x87\x65\x0a\x1d\x82\x05\xab\x82\xbe\xb9\x38\x59\xcf'
@@ -64,7 +70,7 @@ class Device(Peripheral):
         print("Requesting random key...")
 
         requestRandomKey = struct.pack('<2s', b'\x02\x00')
-		
+        
         self.authCharacteristics.write(requestRandomKey)
         self.waitForNotifications(5.0)
 
@@ -110,66 +116,66 @@ class AuthenticationDelegate(DefaultDelegate):
 
             elif data[:3] == b"\x10\x02\x01":
                 print("Recieved: Request random key OK")
-				
+                
                 randomKey = data[3:]
                 print(randomKey)
                 self.device.sendEncryptedKey(randomKey)
 
-			elif data[:3] == b"\x10\x02\x04":
-				print("Recieved: Error random number error")
+            elif data[:3] == b"\x10\x02\x04":
+                print("Recieved: Error random number error")
 
-			elif data[:3] == b"\x10\x03\x01":
-				print("Recieved: Authorization complete")
-				time.sleep(0.5)
+            elif data[:3] == b"\x10\x03\x01":
+                print("Recieved: Authorization complete")
+                time.sleep(0.5)
 
-				# Sending message notification to alert service
-				# test thing - need to test if the connection won't drop
-				# ------------------------------------------------------
-				#alertService = self.device.getServiceByUUID("00001802-0000-1000-8000-00805f9b34fb")
-				#alertCharacteristic = alertService.getCharacteristics("00002a06-0000-1000-8000-00805f9b34fb")[0]
-				#alertTypeMessage = b'\x01'
+                # Sending message notification to alert service
+                # test thing - need to test if the connection won't drop
+                # ------------------------------------------------------
+                #alertService = self.device.getServiceByUUID("00001802-0000-1000-8000-00805f9b34fb")
+                #alertCharacteristic = alertService.getCharacteristics("00002a06-0000-1000-8000-00805f9b34fb")[0]
+                #alertTypeMessage = b'\x01'
 
-				alertService = self.device.getServiceByUUID("00001800-0000-1000-8000-00805f9b34fb")
-				#alertCharacteristic = alertService.getCharacteristics("00002a00-0000-1000-8000-00805f9b34fb")[0]
-				#alertCharacteristic1 = alertService.getCharacteristics("00002a01-0000-1000-8000-00805f9b34fb")[0]
-				#alertCharacteristic2 = alertService.getCharacteristics("00002a04-0000-1000-8000-00805f9b34fb")[0]
-				#alertCharacteristic3 = alertService.getCharacteristics("00002a05-0000-1000-8000-00805f9b34fb")[0]
-				i = 1
-				while i < 128:
-					w = self.device.readCharacteristic(i)
-					ch = self.device.getCharacteristics(i)
-					i += 1
-					print("%s --- %s" % (w, ch[0]))
-				alertTypeMessage = b'\x01'
-				print(alertCharacteristic)
-				print(alertCharacteristic1)
-				print(alertCharacteristic2)
-				print(alertCharacteristic3)
-				alertCharacteristic.write(alertTypeMessage)
-				self.device.waitForNotifications(2)
-				
-				i=0
-				while True:
-				  i = i + 1
-				  alertCharacteristic.write(alertTypeMessage)
-				  time.sleep(3)
-				  if i == 5:
-				  	break
-				# Measuring the heart rate onetime/realtime
-				# Get the heart rate service and its characteristics
-				# --------------------------------------------------
-				#heartRateService = self.device.getServiceByUUID("0000180d-0000-1000-8000-00805f9b34fb")
-				#heartRateControlCharacteristic = heartRateService.getCharacteristics("00002a39-0000-1000-8000-00805f9b34fb")[0]
-				#print(heartRateControlCharacteristic)
+                alertService = self.device.getServiceByUUID("00001800-0000-1000-8000-00805f9b34fb")
+                #alertCharacteristic = alertService.getCharacteristics("00002a00-0000-1000-8000-00805f9b34fb")[0]
+                #alertCharacteristic1 = alertService.getCharacteristics("00002a01-0000-1000-8000-00805f9b34fb")[0]
+                #alertCharacteristic2 = alertService.getCharacteristics("00002a04-0000-1000-8000-00805f9b34fb")[0]
+                #alertCharacteristic3 = alertService.getCharacteristics("00002a05-0000-1000-8000-00805f9b34fb")[0]
+                i = 1
+                while i < 128:
+                    w = self.device.readCharacteristic(i)
+                    ch = self.device.getCharacteristics(i)
+                    i += 1
+                    print("%s --- %s" % (w, ch[0]))
+                alertTypeMessage = b'\x01'
+                print(alertCharacteristic)
+                print(alertCharacteristic1)
+                print(alertCharacteristic2)
+                print(alertCharacteristic3)
+                alertCharacteristic.write(alertTypeMessage)
+                self.device.waitForNotifications(2)
+                
+                i=0
+                while True:
+                  i = i + 1
+                  alertCharacteristic.write(alertTypeMessage)
+                  time.sleep(3)
+                  if i == 5:
+                    break
+                # Measuring the heart rate onetime/realtime
+                # Get the heart rate service and its characteristics
+                # --------------------------------------------------
+                #heartRateService = self.device.getServiceByUUID("0000180d-0000-1000-8000-00805f9b34fb")
+                #heartRateControlCharacteristic = heartRateService.getCharacteristics("00002a39-0000-1000-8000-00805f9b34fb")[0]
+                #print(heartRateControlCharacteristic)
 
-			elif data[:3] == b"\x10\x03\x04":
-				print("Recieved: Encrypted key error")
-				self.device.sendKey()
+            elif data[:3] == b"\x10\x03\x04":
+                print("Recieved: Encrypted key error")
+                self.device.sendKey()
 
-			else:
-				print("Unknown response")
-				print data
-				print data[:3]
-		else:
-			print("nothing2")
+            else:
+                print("Unknown response")
+                print data
+                print data[:3]
+        else:
+            print("nothing2")
 

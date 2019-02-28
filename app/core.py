@@ -107,10 +107,6 @@ async def get_status():
     print("Starting message system")
     reactor.core.message['db_status'] = "Warming up"
     reactor.core.message['db_statistic'] = 0
-    reactor.core.message['minolta_ws_status'] = "Warming up"
-    reactor.core.message['minolta_ws_statistic'] = 0
-    reactor.core.message['cleerio_ws_status'] = "Warming up"
-    reactor.core.message['cleerio_ws_statistic'] = 0
     while True:
         print("DB task status: %s - statistic: %s / %ss" % (reactor.core.message['db_status'], reactor.core.message['db_statistic'], reactor.core.config['reactor']['status_interval']))
         reactor.core.message['db_statistic'] = 0

@@ -11,7 +11,9 @@ from constants import AuthenticationConstants, HeartMonitorConstants, HardwareCo
 # MiBand2
 #macAdress = "FF:BD:87:9D:70:7C"
 # Amazefit Cor
-macAdress = "E5:2F:5A:BE:DC:CA"
+#macAdress = "E5:2F:5A:BE:DC:CA"
+# amazfit
+macAdress = "d8:ec:bf:c7:8c:8b"
 
 authServiceUUID = AuthenticationConstants.AUTHENTICATION_SERVICE
 authCharUUID = AuthenticationConstants.AUTHENTICATION_CHARACTERISTICS
@@ -71,8 +73,8 @@ class Device(Peripheral):
 			self.notifDescriptor.write(b"\x01\x00", True)
 			
 			# This is needed for the Amazefit COR pairing!!!
-			#self.sendKey()
-			#self.waitForNotifications(2)
+			self.sendKey()
+			self.waitForNotifications(2)
 		elif not enable:
 			print("Disabling auth notifications")
 			self.notifDescriptor.write(b"\x00\x00", True)

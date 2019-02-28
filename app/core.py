@@ -2,7 +2,7 @@ import sys, json
 import asyncio
 import aiopg
 import app
-import reactor
+from . import reactor
 
 
 def init():
@@ -17,10 +17,12 @@ def init():
 
 
 class Handler():
-	global config
+    global config
     """Handler read data from task database and do it then update result to database"""
     def __init__(self):
-        self.config = config
+        print("init handler ------ %s" % config)
+        self.config = app.base.config().json
+        print("init handler ------ %s" % config)
 
     async def __aenter__(self):
         async with AsyncDatabase(dbname=self.config['database']['name'], user=self.config['database']['user'], password=self.config['database']['password'], host=self.config['database']['host'], port=self.config['database']['port']) as self.ReactorDatabase:
@@ -37,7 +39,9 @@ class Handler():
 
     async def GetTask(self):
         q = "SELECT id, name, data, status FROM reactor WHERE status = 'ready' LIMIT 1"
+        print(q)
         result = await self.ReactorDatabase.get(q)
+        print(result)
         for each in result:
             self.TaskId = each[0]
             self.TaskName = each[1]
@@ -71,6 +75,7 @@ class AsyncDatabase:
         self.password = password
         self.port = port
         self.dsn = "dbname='%s' user='%s' host='%s' password='%s' port='%s'" % (self.dbname, self.user, self.host, self.password, self.port)
+        print(self.dsn)
 
     async def __aenter__(self):
         #print("aenter")
@@ -81,9 +86,12 @@ class AsyncDatabase:
         await self.pool.__aexit__(*args, **kwargs)
 
     async def get(self, querry):
-        async with aiopg.create_pool(self.dsn) as self.pool:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        loop = asyncio.get_event_loop()
+        async with aiopg.create_pool(self.dsn, loop=loop) as self.pool:
             async with self.pool.acquire() as self.conn:
                 async with self.conn.cursor() as self.cur:
+                    print("Execute q")
                     await self.cur.execute(querry)
                     ret = []
                     async for row in self.cur:

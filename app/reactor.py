@@ -14,6 +14,7 @@ class instance():
     def __init__(self):
         self.config = app.base.config().json
         self.loop = asyncio
+        app.core.init()
 
         with app.base.server() as server:
                 print(server.get_status())
@@ -52,6 +53,7 @@ class spawnCore (threading.Thread):
         asyncio.set_event_loop(asyncio.new_event_loop())
         self.server.register_core(core_id, self)
         loop = asyncio.get_event_loop()
+        print(loop)
         asyncio.ensure_future(self.StartCore(core_id))
         loop.run_forever()
 

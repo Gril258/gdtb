@@ -69,7 +69,7 @@ class spawnCore (threading.Thread):
                 async with connectors.miband.entrypoint() as h:
                     print("Core Tick Start")
                     result = await h.DoTask()
-                    h.TaskStatus = "done"
+                    h.TaskStatus = "ready"
                     print("Core Tick")
             except:
                 print("No task done")

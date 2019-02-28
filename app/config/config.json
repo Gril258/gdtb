@@ -1,7 +1,7 @@
 {
   "SERVER_NAME":"localhost:8080",
   "database": {
-	  "host": "localhost",
+	  "host": "127.0.0.1",
 	  "password": "qwerty",
     "name": "gdt_reactor",
 	  "user": "gdt",
@@ -12,6 +12,6 @@
     "reconect_interval": "60",
     "status_interval": "10",
     "status_verbosity": "high",
-    "cores": "1"
+    "cores": "3"
   }
 }

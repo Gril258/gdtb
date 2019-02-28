@@ -3,7 +3,7 @@ import struct
 import time
 import sys
 import app
-
+import traceback
 from app.core import Handler
 
 from Crypto.Cipher import AES
@@ -16,7 +16,6 @@ from connectors.constants import AuthenticationConstants, HeartMonitorConstants,
 # Amazefit Cor
 #macAdress = "E5:2F:5A:BE:DC:CA"
 # amazfit
-macAdress = "d8:ec:bf:c7:8c:8b"
 
 authServiceUUID = AuthenticationConstants.AUTHENTICATION_SERVICE
 authCharUUID = AuthenticationConstants.AUTHENTICATION_CHARACTERISTICS
@@ -36,16 +35,21 @@ class entrypoint(Handler):
         print("TaskName = %s" % self.TaskName)
         print("TaskData = %s" % self.TaskData)
         self.TaskStatus = "running"
-        main()
         await self.UpdateTask()
-        return "done"
+        try:
+            main(macAdress=self.TaskData['mac'], name=self.TaskName)
+        except:
+            self.TaskStatus = "ready"
+            traceback.print_exc()
+            await self.UpdateTask()
+        return "ready"
 
 class Device(Peripheral):
     #key = b'\xf5\xd2\x29\x87\x65\x0a\x1d\x82\x05\xab\x82\xbe\xb9\x38\x59\xcf'
     key = b'\x89\x4a\x9e\x5c\x41\xa3\x3b\xab\x99\x03\x47\xfa\x1d\xee\xa1\x54'
     connectCount = 0
 
-    def __init__(self, macAdress):
+    def __init__(self, macAdress, name):
     
         while True: 
             try:
@@ -58,7 +62,7 @@ class Device(Peripheral):
                 else:
                     sys.exit("Connection failed, try again")
                 time.sleep(3)
-
+        self.name = name
         #for i in self.getServices():
         #   print(i)
 
@@ -103,8 +107,8 @@ class Device(Peripheral):
         requestRandomKey = struct.pack('<2s', b'\x02\x00\x02')
 
         print("key request")
-        for i in requestRandomKey:
-            print(ord(i))
+        #for i in requestRandomKey:
+        #    print(str(ord(i)))
         
         self.authCharacteristics.write(requestRandomKey)
         self.waitForNotifications(5.0)
@@ -232,7 +236,7 @@ class AuthenticationDelegate(DefaultDelegate):
         
         elif (handle == self.device.heartRateMeasurementCharacteristic.getHandle()):
             #print("Heart rate: " + struct.unpack('HHHHHHH', data[2:]))
-            print("Heart rate: " + str(ord(data[1])))
+            print("Heart rate of task %s: %s" % (self.device.name, str(data[1])))
 
 
         else:
@@ -242,13 +246,16 @@ class AuthenticationDelegate(DefaultDelegate):
 
 
 
-def main():
+def main(macAdress, name):
 
     print('Connecting to ' + macAdress)
-    connectedDevice = Device(macAdress)
+    connectedDevice = Device(macAdress, name)
+    print('Class init')
     connectedDevice.setSecurityLevel(level="medium")
+    print('Class set sec')
 
     connectedDevice.authenticate()
+    print('Class authenticate')
 
     connectedDevice.disconnect()
 

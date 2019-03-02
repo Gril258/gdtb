@@ -1,0 +1,6 @@
+aiopg
+asyncio
+bluepy
+flask
+psycopg2-binary
+pycrypto

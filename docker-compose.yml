@@ -1,0 +1,29 @@
+version: "3.5"
+services:
+    adminer:
+        image: adminer
+        container_name: adminer
+        ports:
+            - "8081:8080"
+    postgres:
+        image: postgres:latest
+        container_name: postgres
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=mysecretpassword
+    server:
+        build:
+            context: .
+            dockerfile: Dockerfile.server
+        container_name: server
+        ports:
+            - "8080:8080"
+        environment:
+            - HOST=0.0.0.0
+            - SERVER_NAME=localhost
+    reactor:
+        build:
+            context: .
+            dockerfile: Dockerfile.reactor
+        container_name: reactor

@@ -10,3 +10,4 @@ COPY requirements.txt /var/gdtb/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 ENTRYPOINT [ "python" ]
+CMD [ "wapi.py", "--start-server" ]

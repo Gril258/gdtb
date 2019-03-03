@@ -28,8 +28,16 @@ services:
             - SERVER_NAME=localhost:8080
             - HOST=localhost
             - PORT=8080
+        volumes:
+            - ./app:/usr/src/gdtb/app:ro
+            - ./connectors:/usr/src/gdtb/connectors:ro
+            - ./wapi.py:/usr/src/gdtb/wapi.py:ro
     reactor:
         build:
             context: .
             dockerfile: Dockerfile.reactor
         container_name: reactor
+        volumes:
+            - ./app:/usr/src/gdtb/app:ro
+            - ./connectors:/usr/src/gdtb/connectors:ro
+            - ./wapi.py:/usr/src/gdtb/wapi.py:ro

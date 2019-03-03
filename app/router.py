@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, render_template, send_from_directory,
 import os
 import json
 import app.views
+from app.base import config
 
 
 class Wapi(Flask):
@@ -17,18 +18,13 @@ class Wapi(Flask):
         self.reload()
 
     def configure(self):
-        config = self.load_config_from_json()
+        config_json = config().json
 
-        self.config['DEBUG'] = config['server']['debug']
-        self.config['ENABLE_ADMIN'] = config['server']['enable_admin']
-        self.config['HOST'] = config['server']['host']
-        self.config['PORT'] = config['server']['port']
-        self.config['SERVER_NAME'] = "%s:%s" % (config['server']['host'], config['server']['port'])
-
-    def load_config_from_json(self):
-        config_dir = os.path.dirname(os.path.abspath(__file__))
-        with open("%s/config/config.json" % (config_dir), "r") as f:
-            return json.load(f)
+        self.config['DEBUG'] = config_json['server']['debug']
+        self.config['ENABLE_ADMIN'] = config_json['server']['enable_admin']
+        self.config['HOST'] = config_json['server']['host']
+        self.config['PORT'] = config_json['server']['port']
+        self.config['SERVER_NAME'] = "%s:%s" % (config_json['server']['host'], config_json['server']['port'])
 
     def override_config_from_env(self):
         if os.getenv("HOST") is not None:

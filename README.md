@@ -3,34 +3,35 @@
 - reactor.py - main program that do corutines to get data and authenticate bands
 - wapi.py - web based api for managing bands and users
 
-## INSTALL
+## Requirements:
 
-Requirements:
-
-- python 3.6
+- Linux
+- python 3.6+
 - docker (optional)
 - glib2-devel (bluepy)
 - python modules: flask, asyncio, aiopg, psycopg2-binary, pycrypto, bluepy
 
-To make virtualenv:
+## To make python3 virtualenv:
 
 ```
 $ python3 -m venv env/
 $ . env/bin/activate
 $ pip install -r requirements.txt
-$ python wapy.py
+$ python wapi.py --start-server
+$ python wapi.py --start-reactor
 ```
 
-To run docker containers:
+## To run docker containers:
 
 ```
 $ docker-compose up -d --build
-$ docker logs server
-$ docker logs reactor
-$ docker logs postgres
+$ docker-compose ps
+$ docker-compose logs server
+$ docker-compose logs reactor
+$ docker-compose logs postgres
 ```
 
-To stop docker containers:
+## To stop docker containers:
 
 ```
 $ docker-compose down

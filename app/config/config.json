@@ -1,7 +1,7 @@
 {
   "server": {
     "host": "localhost",
-    "port": 8082,
+    "port": 8080,
     "debug": true,
     "enable_admin": true,
     "use_reloader": true

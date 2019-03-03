@@ -1,11 +1,10 @@
 {
-  "SERVER_NAME":"localhost:8080",
-  "database": {
-	  "host": "127.0.0.1",
-	  "password": "qwerty",
-    "name": "gdt_reactor",
-	  "user": "gdt",
-	  "port": "5432"
+  "server": {
+    "host": "localhost",
+    "port": 8082,
+    "debug": true,
+    "enable_admin": true,
+    "use_reloader": true
   },
   "reactor": {
     "task_interval": "0.3",
@@ -13,5 +12,12 @@
     "status_interval": "10",
     "status_verbosity": "high",
     "cores": "3"
+  },
+  "database": {
+    "host": "127.0.0.1",
+    "password": "qwerty",
+    "name": "gdt_reactor",
+    "user": "gdt",
+    "port": "5432"
   }
 }

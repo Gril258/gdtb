@@ -5,19 +5,49 @@ import json
 import app.views
 
 
-flask_object = Flask(__name__)
-
 class Wapi(Flask):
     """docstring for AdminRouter"""
-    def __init__(self, fc=None):
+    def __init__(self):
         super().__init__(__name__)
-        self.config.from_pyfile(fc)
-        print(self.config)
-        self.debug = True
-        self.root = "/admin"
-        #print(self.config)
-        print(self)
-        #print(self.view_functions)
+
+        self.configure()
+        self.override_config_from_env()
+        self.setup_routes()
+
+        self.reload()
+
+    def configure(self):
+        config = self.load_config_from_json()
+
+        self.config['DEBUG'] = config['server']['debug']
+        self.config['ENABLE_ADMIN'] = config['server']['enable_admin']
+        self.config['HOST'] = config['server']['host']
+        self.config['PORT'] = config['server']['port']
+        self.config['SERVER_NAME'] = "%s:%s" % (config['server']['host'], config['server']['port'])
+
+    def load_config_from_json(self):
+        config_dir = os.path.dirname(os.path.abspath(__file__))
+        with open("%s/config/config.json" % (config_dir), "r") as f:
+            return json.load(f)
+
+    def override_config_from_env(self):
+        if os.getenv("HOST") is not None:
+            self.config['HOST'] = os.getenv("HOST")
+
+        if os.getenv("PORT") is not None:
+            self.config['PORT'] = os.getenv("PORT")
+
+        if os.getenv("SERVER_NAME") is not None:
+            self.config['SERVER_NAME'] = os.getenv("SERVER_NAME")
+
+    def reload(self):
+        self.run(
+            host=self.config['HOST'],
+            port=self.config['PORT'],
+            debug=self.config['DEBUG']
+        )
+
+    def setup_routes(self):
         if self.config['ENABLE_ADMIN'] == True:
             msg = []
             msg.append(self.enable_admin())
@@ -27,24 +57,20 @@ class Wapi(Flask):
             msg.append(self.enable_task())
             for m in msg:
                 print(m)
-        self.reload()
-
-    def reload(self):
-        self.run(host=self.config['HOST'])
 
     def enable_admin(self):
-        url = "%s" % self.root
+        url = "/admin"
         print("adding route %s" % url)
         view = app.views.admin.AdminView.as_view('admin')
-        self.add_url_rule('/admin/', view_func=view, methods=['GET',])
+        self.add_url_rule(url, view_func=view, methods=['GET',])
         return "Admin Module loaded"
 
     def enable_static(self):
-        print("adming route for /static")
+        print("adding route /static")
         static_view = app.views.static.StaticView.as_view('static_file')
         self.add_url_rule('/static/<path:path>', view_func=static_view, methods=['GET',])
         return "Static Module loaded"
-        
+
     def enable_login(self):
         url = "/login"
         print("adding route %s" % url)

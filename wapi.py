@@ -3,16 +3,13 @@
 # wapi flask interface start point
 
 import optparse
-import app
 import traceback
+import app
 
-
-#app = Flask(__name__)
-#app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
 def parse_args():
     usage = """
-    python3 wapi.py --server
+    python3 wapi.py --start-server
 """
     parser = optparse.OptionParser(usage)
 
@@ -22,23 +19,24 @@ def parse_args():
     help = "Start Flask server"
     parser.add_option('--start-reactor', action="store_true", dest="reactor", help=help, default=False)
 
-    help = "Set path to Flask config"
-    parser.add_option('--fc', type=str, dest="flask_config", help=help, default="./config/flask.cfg")
-
     options, args = parser.parse_args()
 
     return options
 
 def main():
     options = parse_args()
+
+    if options.reactor == True and options.server == True:
+        print("Cannot start both server and reactor with this command, choose --start-server OR --start-reactor")
+        exit(1)
+    
     try:
-        if options.server == True and options.reactor == False:
-            flask_server = app.router.Wapi(fc=options.flask_config)
-        elif options.reactor == True and options.server == False:
-            reactor_server = app.reactor.instance()
-        elif options.reactor == True and options.server == True:
-        	print("cannot start both with this command, chose --start-server or --start-reactor")
-    except Exception as e:
+        if options.server == True:
+            app.router.Wapi()
+        elif options.reactor == True:
+            app.reactor.instance()
+        	
+    except Exception:
         print("Wapi Main loop Exception")
         traceback.print_exc()
 

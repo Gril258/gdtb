@@ -1,7 +1,6 @@
 # basic flask router configuration
-from flask import Flask, jsonify, request, render_template, send_from_directory, Response
+from flask import Flask
 import os
-import json
 import app.views
 from app.base import config
 
@@ -10,32 +9,30 @@ class Wapi(Flask):
     """docstring for AdminRouter"""
     def __init__(self):
         super().__init__(__name__)
-
         self.configure()
         self.override_config_from_env()
         self.setup_routes()
-
         self.reload()
 
+    
     def configure(self):
         config_json = config().json
-
         self.config['DEBUG'] = config_json['server']['debug']
         self.config['ENABLE_ADMIN'] = config_json['server']['enable_admin']
         self.config['HOST'] = config_json['server']['host']
         self.config['PORT'] = config_json['server']['port']
         self.config['SERVER_NAME'] = "%s:%s" % (config_json['server']['host'], config_json['server']['port'])
 
+    
     def override_config_from_env(self):
         if os.getenv("HOST") is not None:
             self.config['HOST'] = os.getenv("HOST")
-
         if os.getenv("PORT") is not None:
             self.config['PORT'] = os.getenv("PORT")
-
         if os.getenv("SERVER_NAME") is not None:
             self.config['SERVER_NAME'] = os.getenv("SERVER_NAME")
 
+    
     def reload(self):
         self.run(
             host=self.config['HOST'],
@@ -43,6 +40,7 @@ class Wapi(Flask):
             debug=self.config['DEBUG']
         )
 
+    
     def setup_routes(self):
         if self.config['ENABLE_ADMIN'] == True:
             msg = []
@@ -54,6 +52,7 @@ class Wapi(Flask):
             for m in msg:
                 print(m)
 
+    
     def enable_admin(self):
         url = "/admin"
         print("adding route %s" % url)
@@ -61,12 +60,14 @@ class Wapi(Flask):
         self.add_url_rule(url, view_func=view, methods=['GET',])
         return "Admin Module loaded"
 
+    
     def enable_static(self):
         print("adding route /static")
         static_view = app.views.static.StaticView.as_view('static_file')
         self.add_url_rule('/static/<path:path>', view_func=static_view, methods=['GET',])
         return "Static Module loaded"
 
+    
     def enable_login(self):
         url = "/login"
         print("adding route %s" % url)
@@ -74,6 +75,7 @@ class Wapi(Flask):
         self.add_url_rule(url, view_func=view, methods=['GET', 'POST'])
         return "Login Module loaded"
 
+    
     def enable_user(self):
         url = "/user"
         print("adding route %s" % url)
@@ -83,6 +85,7 @@ class Wapi(Flask):
         self.add_url_rule('/user/<int:user_id>', view_func=user_view, methods=['GET', 'PUT', 'DELETE'])
         return "User Module loaded"
 
+    
     def enable_task(self):
         url = "/task"
         print("adding route %s" % url)

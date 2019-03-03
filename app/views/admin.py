@@ -8,7 +8,7 @@ class AdminView(views.MethodView):
         config = app.base.config().json
         if 'Auth' in request.cookies:
             if request.cookies['Auth'] == 'yes':
-                return render_template('AdminHome.html', SERVER_URL=config['server']['name'])
+                return render_template('AdminHome.html', SERVER_URL=config['server']['url'])
         else:
             return redirect(url_for('login'))
 

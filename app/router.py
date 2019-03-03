@@ -15,7 +15,7 @@ class Wapi(Flask):
 
 
     def reload(self):
-        self.config['SERVER_NAME'] = self.config_json['server']['name']
+        self.config['SERVER_NAME'] = self.config_json['server']['url']
 
         self.run(
             host=self.config_json['server']['host'],

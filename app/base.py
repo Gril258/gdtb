@@ -19,10 +19,18 @@ class config():
 
     def overrride_from_env(self):
         # this is is dynamic (not part of config.json)
-        if os.getenv("SERVER_NAME") is not None:
-            self.json['server']['name'] = os.getenv("SERVER_NAME")
+        if os.getenv("SERVER_URL") is not None:
+            server_url = os.getenv("SERVER_URL")
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
+        elif os.getenv("HOST") is not None and os.getenv("PORT") is not None:
+            server_url = "%s:%s" % (os.getenv("HOST"), os.getenv("PORT"))
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
         else:
-            self.json['server']['name'] = "%s:%s" % (os.getenv("HOST"), os.getenv("PORT"))
+            server_url = "%s:%s" % (self.json['server']['host'], self.json['server']['port'])
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
 
         # this is part of config.json
         if os.getenv("HOST") is not None:

@@ -12,6 +12,9 @@ services:
             - "5432:5432"
         environment:
             - POSTGRES_PASSWORD=mysecretpassword
+            - POSTGRES_USER=gdt
+            - POSTGRES_PASSWORD=qwerty
+            - POSTGRES_DB=gdt_reactor
     server:
         build:
             context: .

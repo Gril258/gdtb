@@ -16,7 +16,7 @@
   "database": {
     "host": "127.0.0.1",
     "password": "qwerty",
-    "name": "gdt_reactor",
+    "name": "gdt_reactor_test",
     "user": "gdt",
     "port": "5432"
   }

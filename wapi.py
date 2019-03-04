@@ -5,6 +5,7 @@
 import optparse
 import traceback
 import app
+import schema
 
 
 def parse_args():
@@ -18,6 +19,9 @@ def parse_args():
 
     help = "Start Flask server"
     parser.add_option('--start-reactor', action="store_true", dest="reactor", help=help, default=False)
+
+    help = "Create empty schema of reactor database"
+    parser.add_option('--init-reactor-database', action="store_true", dest="initdb", help=help, default=False)
 
     options, args = parser.parse_args()
 
@@ -35,7 +39,8 @@ def main():
             app.router.Wapi()
         elif options.reactor == True:
             app.reactor.instance()
-        	
+        elif options.initdb == True:
+            schema.initialize.ReactorDb()     	
     except Exception:
         print("Wapi Main loop Exception")
         traceback.print_exc()

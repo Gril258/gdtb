@@ -401,20 +401,16 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: reactor; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.reactor (id, name, status, data, options, module) FROM stdin;
-3	amazfit	running	{"mac":"E5:2F:5A:BE:DC:CA"}	\N	test
-4	miband2	running	{"mac":"FF:BD:87:9D:70:7C"}	\N	test
-2	test	ready	{"mac":"d8:ec:bf:c7:8c:8b"}	{"mac":"d8:ec:bf:c7:8c:8b"}	test
-\.
+INSERT INTO public.reactor (id, name, status, data, options, module) VALUES (3, 'amazfit', 'running', '{"mac":"E5:2F:5A:BE:DC:CA"}', NULL, 'test');
+INSERT INTO public.reactor (id, name, status, data, options, module) VALUES (4, 'miband2', 'running', '{"mac":"FF:BD:87:9D:70:7C"}', NULL, 'test');
+INSERT INTO public.reactor (id, name, status, data, options, module) VALUES (2, 'test', 'ready', '{"mac":"d8:ec:bf:c7:8c:8b"}', '{"mac":"d8:ec:bf:c7:8c:8b"}', 'test');
 
 
 --
 -- Data for Name: reactor_c_module; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.reactor_c_module (id, name) FROM stdin;
-1	test
-\.
+INSERT INTO public.reactor_c_module (id, name) VALUES (1, 'test');
 
 
 --
@@ -428,11 +424,9 @@ SELECT pg_catalog.setval('public.reactor_c_module_id_seq', 1, true);
 -- Data for Name: reactor_c_status; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.reactor_c_status (id, name) FROM stdin;
-1	ready
-2	running
-3	done
-\.
+INSERT INTO public.reactor_c_status (id, name) VALUES (1, 'ready');
+INSERT INTO public.reactor_c_status (id, name) VALUES (2, 'running');
+INSERT INTO public.reactor_c_status (id, name) VALUES (3, 'done');
 
 
 --
@@ -453,8 +447,6 @@ SELECT pg_catalog.setval('public.reactor_id_seq', 4, true);
 -- Data for Name: reactor_server_slot; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.reactor_server_slot (id, core_id, server_id, reactor_id) FROM stdin;
-\.
 
 
 --
@@ -468,17 +460,13 @@ SELECT pg_catalog.setval('public.reactor_server_slot_id_seq', 268, true);
 -- Data for Name: server; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.server (id, hostname, machine_type, machine_id, machine_env, machine_location, status) FROM stdin;
-\.
 
 
 --
 -- Data for Name: server_c_machine_type; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.server_c_machine_type (id, name) FROM stdin;
-1	labrat
-\.
+INSERT INTO public.server_c_machine_type (id, name) VALUES (1, 'labrat');
 
 
 --
@@ -492,10 +480,8 @@ SELECT pg_catalog.setval('public.server_c_machine_type_id_seq', 1, true);
 -- Data for Name: server_c_status; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.server_c_status (id, name) FROM stdin;
-1	registered
-2	online
-\.
+INSERT INTO public.server_c_status (id, name) VALUES (1, 'registered');
+INSERT INTO public.server_c_status (id, name) VALUES (2, 'online');
 
 
 --
@@ -509,9 +495,7 @@ SELECT pg_catalog.setval('public.server_id_seq', 110, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: gdt
 --
 
-COPY public.users (id, name, md5_password, email, superadmin) FROM stdin;
-1	admin	d8578edf8458ce06fbc5bb76a58c5ca4	krutma@seznam.cz	t
-\.
+INSERT INTO public.users (id, name, md5_password, email, superadmin) VALUES (1, 'admin', 'd8578edf8458ce06fbc5bb76a58c5ca4', 'krutma@seznam.cz', true);
 
 
 --

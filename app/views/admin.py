@@ -67,8 +67,15 @@ class UserView(views.MethodView):
 
     def delete(self, user_id):
         # delete a single user
-        pass
-
+        if 'Auth' in request.cookies:
+            if request.cookies['Auth'] == 'yes':
+                u = app.base.user()
+                u.user_id = user_id
+                res = {}
+                res['status'] = u.delete_user()
+                return jsonify(**res)
+        else:
+            return redirect(url_for('login'))
     def put(self, user_id):
         # update a single user
         pass
@@ -87,14 +94,16 @@ class TaskView(views.MethodView):
     def post(self):
         # create a new user
         e = {}
-        user = request.get_json()
-        if 'name' in user and 'password' in user:
-            u = app.base.user()
-            u.name = user['name']
-            u.md5_password = u.encrypt_password(user['password'])
-            u.email = user['email']
-            if u.create_user():
-                return jsonify(**user)
+        task = request.get_json()
+        if 'name' in task and 'module' in task:
+            t = app.base.task()
+            t.name = task['name']
+            t.status = "ready"
+            t.module = task['module']
+            t.data = task['data']
+            t.options = task['options']
+            if t.create_task():
+                return jsonify(**task)
             else:
                 e['status'] = "Error: cannot create user"
                 return jsonify(**e)

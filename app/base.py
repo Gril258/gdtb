@@ -95,6 +95,16 @@ class user():
         else:
             return False
 
+    def delete_user(self):
+        cur = self.reactor_db.connection.cursor()
+        q = "DELETE FROM users WHERE id = %s"
+        if self.user_id is not None:
+            cur.execute(q, (self.user_id,))
+            self.reactor_db.connection.commit()
+            return True
+        else:
+            return False
+
     def authenticate(self, name, password):
         auth_name = name
         auth_md5_password = self.encrypt_password(password)
@@ -121,6 +131,9 @@ class user():
                 return True
         return False
 
+    def create_table(self):
+        cur = self.reactor_db
+
 class task():
     """main authentication method class"""
     def __init__(self):
@@ -136,9 +149,9 @@ class task():
 
     def create_task(self):
         cur = self.reactor_db.connection.cursor()
-        q = "WITH cte AS(INSERT INTO reactor (name, status) VALUES (%s, %s) RETURNING id) SELECT * FROM cte"
+        q = "WITH cte AS(INSERT INTO reactor (name, status, module, options, data) VALUES (%s, %s, %s, %s, %s) RETURNING id) SELECT * FROM cte"
         if self.name is not None and self.status is not None:
-            cur.execute(q, (self.name, self.status))
+            cur.execute(q, (self.name, self.status, self.module, self.options, self.data))
             self.reactor_db.connection.commit()
             self.task_id = cur.fetchone()[0]
             return True

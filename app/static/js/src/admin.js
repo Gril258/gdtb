@@ -41,6 +41,35 @@ app.controller("GDAdminController", function($scope, $http, $window) {
     );
   }
 
+  $scope.DeleteUser = function (userId) {
+    var dest = "http://" + server_url + "/user/" + userId;
+    $http.delete(dest, config).then(
+        function successCallback(response) {
+            $scope.GetUserList()
+        }, function errorCallback(response) {
+            $scope.HttpError = response.code;
+        }
+    );
+  }
+
+  $scope.CreateTask = function () {
+    var dest = "http://" + server_url + "/task/";
+    var body = {
+        'name': $scope.CtName,
+        'status': $scope.CtStatus,
+        'module': $scope.CtModule,
+        'data': $scope.CtData,
+        'options': $scope.CtOptions
+    }
+    $http.post(dest, body, config).then(
+        function successCallback(response) {
+            $scope.GetTaskList()
+        }, function errorCallback(response) {
+            $scope.CuError = "error CreateUser";
+        }
+    );
+  };
+
   $scope.CreateUser = function () {
     var dest = "http://" + server_url + "/user/";
     var body = {

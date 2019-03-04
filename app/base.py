@@ -7,15 +7,41 @@ import hashlib
 class config():
     """docstring for config"""
     def __init__(self):
-        self.json = self.get_config() 
+        self.json = self.load_from_file()
+        self.overrride_from_env()
 
 
-    def get_config(self):
+    def load_from_file(self):
         """doc"""
         config_dir = os.path.dirname(os.path.abspath(__file__))
         with open("%s/config/config.json" % (config_dir), "r") as f:
             return json.load(f)
-		
+
+    def overrride_from_env(self):
+        # this is is dynamic (not part of config.json)
+        if os.getenv("SERVER_URL") is not None:
+            server_url = os.getenv("SERVER_URL")
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
+        elif os.getenv("HOST") is not None and os.getenv("PORT") is not None:
+            server_url = "%s:%s" % (os.getenv("HOST"), os.getenv("PORT"))
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
+        else:
+            server_url = "%s:%s" % (self.json['server']['host'], self.json['server']['port'])
+            print("Registering SERVER_URL=%s" % (server_url))
+            self.json['server']['url'] = server_url
+
+        # this is part of config.json
+        if os.getenv("HOST") is not None:
+            self.json['server']['host'] = os.getenv("HOST")
+        if os.getenv("PORT") is not None:
+            self.json['server']['port'] = os.getenv("PORT")
+        if os.getenv("DB_HOST") is not None:
+            self.json['database']['host'] = os.getenv("DB_HOST")
+        if os.getenv("DB_PORT") is not None:
+            self.json['database']['port'] = os.getenv("DB_PORT")
+
 
 class user():
     """main authentication method class"""
@@ -23,7 +49,7 @@ class user():
         self.config = config().json
         self.user_id = None
         self.name = None
-        self.md5_password = None 
+        self.md5_password = None
         self.email = None
         self.reactor_db = database.connection(self.config['database']['name'], self.config['database']['host'], self.config['database']['user'], self.config['database']['password'], self.config['database']['port'])
         self.reactor_db.connect()
@@ -84,13 +110,13 @@ class user():
     def load_user_by_name(self, name):
         cur = self.reactor_db.connection.cursor()
         q = "SELECT id, name, md5_password, email FROM users WHERE name = %s"
-        cur.execute(q, (name,))		
+        cur.execute(q, (name,))
         r = cur.fetchone()
         if r is not None:
             if r[1] == name:
                 self.user_id = r[0]
                 self.name = r[1]
-                self.md5_password = r[2] 
+                self.md5_password = r[2]
                 self.email = r[3]
                 return True
         return False
@@ -151,13 +177,13 @@ class task():
     def load_task_by_name(self, name):
         cur = self.reactor_db.connection.cursor()
         q = "SELECT id, name, status, data, options, module FROM users WHERE name = %s"
-        cur.execute(q, (name,))     
+        cur.execute(q, (name,))
         r = cur.fetchone()
         if r is not None:
             if r[1] == name:
                 self.id = r[0]
                 self.name = r[1]
-                self.status = r[2] 
+                self.status = r[2]
                 self.data = r[3]
                 self.options = r[4]
                 self.module = r[5]

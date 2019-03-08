@@ -11,7 +11,7 @@
     "reconect_interval": "60",
     "status_interval": "10",
     "status_verbosity": "high",
-    "cores": "3"
+    "cores": "4"
   },
   "database": {
     "host": "127.0.0.1",

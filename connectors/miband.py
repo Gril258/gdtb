@@ -4,6 +4,7 @@ import time
 import sys
 import app
 import traceback
+import asyncio
 from app.core import Handler
 
 from Crypto.Cipher import AES
@@ -31,13 +32,16 @@ sensorCharacteristicUUID = HardwareConstants.SENSOR_CHARACTERISTIC
 class entrypoint(Handler):
     """docstring for entrypoint"""
     async def DoTask(self):
+        self.config = app.base.config().json
         print("TaskId - MIBAND!!!! = %s" % self.TaskId)
         print("TaskName = %s" % self.TaskName)
         print("TaskData = %s" % self.TaskData)
         self.TaskStatus = "running"
         await self.UpdateTask()
         try:
-            main(macAdress=self.TaskData['mac'], name=self.TaskName)
+            while True:
+                await main(macAdress=self.TaskData['mac'], name=self.TaskName)
+                await asyncio.sleep(self.config['reactor']['interval'])
         except:
             self.TaskStatus = "ready"
             traceback.print_exc()

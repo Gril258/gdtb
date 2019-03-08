@@ -78,6 +78,22 @@ class UserView(views.MethodView):
             return redirect(url_for('login'))
     def put(self, user_id):
         # update a single user
+        e = {}
+        user = request.get_json()
+        if 'name' in user and 'password' in user and 'id' in user:
+            u = app.base.user()
+            u.user_id = user['id']
+            u.name = user['name']
+            u.md5_password = u.encrypt_password(user['password'])
+            u.email = user['email']
+            if u.update_user():
+                return jsonify(**user)
+            else:
+                e['status'] = "Error: cannot create user"
+                return jsonify(**e)
+        else:
+            e['status'] = "Error: wrong username or password"
+            return jsonify(**e)
         pass
 
 class TaskView(views.MethodView):
@@ -111,10 +127,35 @@ class TaskView(views.MethodView):
             e['status'] = "Error: wrong username or password"
             return jsonify(**e)
 
-    def delete(self, user_id):
-        # delete a single user
-        pass
-
-    def put(self, user_id):
+    def delete(self, task_id):
+        # delete a single task
+        if 'Auth' in request.cookies:
+            if request.cookies['Auth'] == 'yes':
+                t = app.base.task()
+                t.task_id = task_id
+                res = {}
+                res['status'] = t.delete_task()
+                return jsonify(**res)
+        else:
+            return redirect(url_for('login'))
+    def put(self, task_id):
         # update a single user
+        e = {}
+        task = request.get_json()
+        if 'name' in task and 'module' in task and 'id' in task:
+            t = app.base.task()
+            t.task_id = task_id
+            t.name = task['name']
+            t.status = "ready"
+            t.module = task['module']
+            t.data = task['data']
+            t.options = task['options']
+            if t.update_task():
+                return jsonify(**task)
+            else:
+                e['status'] = "Error: cannot create user"
+                return jsonify(**e)
+        else:
+            e['status'] = "Error: wrong username or password"
+            return jsonify(**e)
         pass

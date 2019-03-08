@@ -39,6 +39,7 @@ class instance():
 class spawnCore (threading.Thread):
     def __init__(self, threadID, name, counter, server):
         threading.Thread.__init__(self)
+        self.config = app.base.config().json
         self.server = server
         self.threadID = threadID
         self.name = name
@@ -68,11 +69,12 @@ class spawnCore (threading.Thread):
             try:
                 async with connectors.miband.entrypoint() as h:
                     print("Core Tick Start")
-                    result = await h.DoTask()
-                    h.TaskStatus = "ready"
+                    if h.TaskStatus == "loaded":
+                        result = await h.DoTask()
+                        h.TaskStatus = "done"
                     print("Core Tick")
             except:
                 print("No task done")
                 traceback.print_exc()
             finally:
-                await asyncio.sleep(3)
+                await asyncio.sleep(float(self.config['reactor']['task_interval']))

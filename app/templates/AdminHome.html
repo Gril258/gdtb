@@ -15,19 +15,19 @@
     <div id="page-wrapper">
 
         <div class="container-fluid">
+            {% raw %}
 
             <!-- Page Heading -->
             <div class="row">
                 <div class="col-lg-6">
                     <h1 class="page-header">
-                        Tables
+                        Tables    {{ ShowCu }}
                     </h1>
-                    <span><button ng-style="style0" ng-click="showme=true">Create User</button></span>
-                    <span><button ng-style="style0" ng-click="showme=false">Hide</button></span>
-                      {% raw %}
-                    <div ng-show="showme">
+                    <span><button ng-style="style0" ng-click="HideCu=false">Create User</button></span>
+                    <span><button ng-style="style0" ng-click="HideCu=true">Hide</button></span>
+                    <div ng-class="{'ng-hide': HideCu}">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">User Name {{ CuName }}</label>
+                        <label for="exampleInputEmail1">User Name {{ ShowCu }}</label>
                         <input ng-model="CuName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter username">
                       </div>
                       <div class="form-group">
@@ -61,10 +61,10 @@
                     <h1 class="page-header">
                         Tables
                     </h1>
-                    <span><button ng-style="style0" ng-click="ShowCt=true">Create Task</button></span>
-                    <span><button ng-style="style0" ng-click="ShowCt=false">Hide</button></span>
+                    <span><button ng-style="style0" ng-click="HideCt=false">Create Task</button></span>
+                    <span><button ng-style="style0" ng-click="HideCt=true">Hide</button></span>
                       {% raw %}
-                    <div ng-show="ShowCt">
+                    <div ng-class="{'ng-hide': HideCt}">
                       <div class="form-group">
                         <label for="Example">Task Name</label>
                         <input ng-model="CtName" class="form-control" id="InputTaskName1" aria-describedby="taskHelp" placeholder="Enter Task Name">
@@ -121,7 +121,8 @@
                                     <td>{{ user['id'] }}</td>
                                     <td>{{ user['name'] }}</td>
                                     <td>{{ user['email'] }}</td>
-                                    <td><span><button ng-style="style0" ng-click="DeleteUser(user['id'])">Remove User</button></span></td>
+                                    <td><span><button ng-style="style0" ng-click="DeleteUser(user['id'])">Remove User</button></span>
+                                    <span><button ng-style="style0" ng-class="{'ng-hide': HideCu}" ng-click="UpdateUser(user['id'])">Update1 User</button></span>
                                 </tr>
                             {% endraw %}
                             </tbody>
@@ -140,6 +141,7 @@
                                     <th>Task Module</th>
                                     <th>Task Data</th>
                                     <th>Task Options</th>
+                                    <th>Task action</th>                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -151,6 +153,69 @@
                                     <td>{{ task['module'] }}</td>
                                     <td>{{ task['data'] }}</td>
                                     <td>{{ task['options'] }}</td>
+                                    <td><span><button ng-style="style0" ng-click="DeleteTask(task['id'])">Remove Task</button></span>
+                                    <span><button ng-style="style0" ng-class="{'ng-hide': HideCt}" ng-click="UpdateTask(task['id'])">Update Task</button></span></td>
+                                </tr>
+                            {% endraw %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-lg-6">
+                    <h2>User Table</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Server Id</th>
+                                    <th>Server Hostname</th>
+                                    <th>Server Status</th>                                    
+                                    <th>Server Machine Type</th>
+                                    <th>Server Machine id</th>
+                                    <th>Server Machine env</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% raw %}
+                                <tr ng-repeat="user in UserList['list']">
+                                    <td>{{ user['id'] }}</td>
+                                    <td>{{ user['name'] }}</td>
+                                    <td>{{ user['email'] }}</td>
+                                    <td><span><button ng-style="style0" ng-click="DeleteUser(user['id'])">Remove User</button></span>
+                                    <span><button ng-style="style0" ng-class="{'ng-hide': HideCu}" ng-click="UpdateUser(user['id'])">Update1 User</button></span>
+                                </tr>
+                            {% endraw %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h2>Task Table</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Task Id</th>
+                                    <th>Task Name</th>
+                                    <th>Task Status</th>
+                                    <th>Task Module</th>
+                                    <th>Task Data</th>
+                                    <th>Task Options</th>
+                                    <th>Task action</th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% raw %}
+                                <tr ng-repeat="task in TaskList['list']">
+                                    <td>{{ task['id'] }}</td>
+                                    <td>{{ task['name'] }}</td>
+                                    <td>{{ task['status'] }}</td>
+                                    <td>{{ task['module'] }}</td>
+                                    <td>{{ task['data'] }}</td>
+                                    <td>{{ task['options'] }}</td>
+                                    <td><span><button ng-style="style0" ng-click="DeleteTask(task['id'])">Remove Task</button></span>
+                                    <span><button ng-style="style0" ng-class="{'ng-hide': HideCt}" ng-click="UpdateTask(task['id'])">Update Task</button></span></td>
                                 </tr>
                             {% endraw %}
                             </tbody>

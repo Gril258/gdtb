@@ -20,20 +20,25 @@ class Handler():
     global config
     """Handler read data from task database and do it then update result to database"""
     def __init__(self):
-        print("init handler ------ %s" % config)
+        #print("init handler ------ %s" % config)
         self.config = app.base.config().json
-        print("init handler ------ %s" % config)
+        #print("init handler ------ %s" % config)
 
     async def __aenter__(self):
         async with AsyncDatabase(dbname=self.config['database']['name'], user=self.config['database']['user'], password=self.config['database']['password'], host=self.config['database']['host'], port=self.config['database']['port']) as self.ReactorDatabase:
             print("exit aenter")
-            await self.GetTask()
-            #await self.DoTask()
+            if (await self.GetTask()):
+                self.TaskStatus = 'loaded'
+                print(self.TaskStatus)
+                await self.UpdateTask()
+            else:
+                self.TaskStatus = False
         return self
 
     async def __aexit__(self, *args, **kwargs):
         print("aexit")
-        await self.UpdateTask()
+        if self.TaskStatus:
+            await self.UpdateTask()
         await self.ReactorDatabase.__aexit__(*args, **kwargs)
         #await self._conn.__aexit__(*args, **kwargs)
 
@@ -42,12 +47,15 @@ class Handler():
         print(q)
         result = await self.ReactorDatabase.get(q)
         print(result)
-        for each in result:
-            self.TaskId = each[0]
-            self.TaskName = each[1]
-            self.TaskData = each[2]
-            self.TaskStatus = each[3]
-        return True
+        if len(result) > 0:
+            for each in result:
+                self.TaskId = each[0]
+                self.TaskName = each[1]
+                self.TaskData = each[2]
+                self.TaskStatus = each[3]
+            return True
+        else:
+            return False
 
     async def DoTask(self):
         print("TaskId = %s" % self.TaskId)
@@ -60,10 +68,10 @@ class Handler():
         return True
 
     async def UpdateTask(self):
-    	q = "UPDATE reactor SET status = %s WHERE id = %s"
-    	v = (self.TaskStatus, self.TaskId)
-    	await self.ReactorDatabase.update(q,v)
-    	return "done"
+        q = "UPDATE reactor SET status = %s WHERE id = %s"
+        v = (self.TaskStatus, self.TaskId)
+        await self.ReactorDatabase.update(q,v)
+        return "done"
 
 
 
@@ -123,5 +131,5 @@ async def get_status():
         print("Cleerio WS task status: %s - statistic: %s / %ss" % (reactor.core.message['cleerio_ws_status'], reactor.core.message['cleerio_ws_statistic'], reactor.core.config['reactor']['status_interval']))
         reactor.core.message['cleerio_ws_statistic'] = 0
         if reactor.core.config['reactor']['status_verbosity'] == "high":
-        	print("Minolta WS ws_data %s" % reactor.mtws.ws_data)  
+            print("Minolta WS ws_data %s" % reactor.mtws.ws_data)  
         await asyncio.sleep(float(reactor.core.config['reactor']['status_interval']))

@@ -4,44 +4,56 @@ import json
 import socket
 from . import database
 import hashlib
+
+
 class config():
-    """docstring for config"""
-    def __init__(self):
-        self.json = self.load_from_file()
-        self.overrride_from_env()
+    class __config():
+        """docstring for config"""
+        def __init__(self):
+            self.json = self.load_from_file()
+            self.overrride_from_env()
+    
+    
+        def load_from_file(self):
+            """doc"""
+            config_dir = os.path.dirname(os.path.abspath(__file__))
+            with open("%s/config/config.json" % (config_dir), "r") as f:
+                return json.load(f)
+    
+        def overrride_from_env(self):
+            # this is is dynamic (not part of config.json)
+            if os.getenv("SERVER_URL") is not None:
+                server_url = os.getenv("SERVER_URL")
+                print("Registering SERVER_URL=%s" % (server_url))
+                self.json['server']['url'] = server_url
+            elif os.getenv("HOST") is not None and os.getenv("PORT") is not None:
+                server_url = "%s:%s" % (os.getenv("HOST"), os.getenv("PORT"))
+                print("Registering SERVER_URL=%s" % (server_url))
+                self.json['server']['url'] = server_url
+            else:
+                server_url = "%s:%s" % (self.json['server']['host'], self.json['server']['port'])
+                print("Registering SERVER_URL=%s" % (server_url))
+                self.json['server']['url'] = server_url
+    
+            # this is part of config.json
+            if os.getenv("HOST") is not None:
+                self.json['server']['host'] = os.getenv("HOST")
+            if os.getenv("PORT") is not None:
+                self.json['server']['port'] = os.getenv("PORT")
+            if os.getenv("DB_HOST") is not None:
+                self.json['database']['host'] = os.getenv("DB_HOST")
+            if os.getenv("DB_PORT") is not None:
+                self.json['database']['port'] = os.getenv("DB_PORT")
 
-
-    def load_from_file(self):
-        """doc"""
-        config_dir = os.path.dirname(os.path.abspath(__file__))
-        with open("%s/config/config.json" % (config_dir), "r") as f:
-            return json.load(f)
-
-    def overrride_from_env(self):
-        # this is is dynamic (not part of config.json)
-        if os.getenv("SERVER_URL") is not None:
-            server_url = os.getenv("SERVER_URL")
-            print("Registering SERVER_URL=%s" % (server_url))
-            self.json['server']['url'] = server_url
-        elif os.getenv("HOST") is not None and os.getenv("PORT") is not None:
-            server_url = "%s:%s" % (os.getenv("HOST"), os.getenv("PORT"))
-            print("Registering SERVER_URL=%s" % (server_url))
-            self.json['server']['url'] = server_url
-        else:
-            server_url = "%s:%s" % (self.json['server']['host'], self.json['server']['port'])
-            print("Registering SERVER_URL=%s" % (server_url))
-            self.json['server']['url'] = server_url
-
-        # this is part of config.json
-        if os.getenv("HOST") is not None:
-            self.json['server']['host'] = os.getenv("HOST")
-        if os.getenv("PORT") is not None:
-            self.json['server']['port'] = os.getenv("PORT")
-        if os.getenv("DB_HOST") is not None:
-            self.json['database']['host'] = os.getenv("DB_HOST")
-        if os.getenv("DB_PORT") is not None:
-            self.json['database']['port'] = os.getenv("DB_PORT")
-
+    instance = None
+    def __new__(cls): # __new__ always a classmethod
+        if not config.instance:
+            config.instance = config.__config()
+        return config.instance
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
+    def __setattr__(self, name):
+        return setattr(self.instance, name)
 
 class user():
     """main authentication method class"""
@@ -181,11 +193,23 @@ class task():
         cur = self.reactor_db.connection.cursor()
         q = "UPDATE reactor SET name = %s, status = %s, data = %s, options = %s, module = %s WHERE id = %s"
         if self.task_id is not None and self.name is not None:
-            cur.execute(q, (self.name, self.status, self.data, self.options, self.module, self.taks_id))
+            cur.execute(q, (self.name, self.status, self.data, self.options, self.module, self.task_id))
             self.reactor_db.connection.commit()
             return True
         else:
             return False
+
+
+    def delete_task(self):
+        cur = self.reactor_db.connection.cursor()
+        q = "DELETE FROM reactor WHERE id = %s"
+        if self.task_id is not None:
+            cur.execute(q, (self.task_id,))
+            self.reactor_db.connection.commit()
+            return True
+        else:
+            return False
+
 
     def load_task_by_name(self, name):
         cur = self.reactor_db.connection.cursor()
